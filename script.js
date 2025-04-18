@@ -1,38 +1,35 @@
-let draggedDiv = null;
+let draggedElement = null;
 
 document.querySelectorAll(".image").forEach(div => {
-    // Drag start
-    div.addEventListener("dragstart", (e) => {
-        draggedDiv = e.target;
-        e.target.classList.add("selected");
-    });
+  // When drag starts
+  div.addEventListener("dragstart", (e) => {
+    draggedElement = e.target;
+    e.dataTransfer.setData("text/plain", e.target.id);
+  });
 
-    // Drag over
-    div.addEventListener("dragover", (e) => {
-        e.preventDefault();
-    });
+  // When over a droppable target
+  div.addEventListener("dragover", (e) => {
+    e.preventDefault(); // Necessary to allow drop
+  });
 
-    // Drop
-    div.addEventListener("drop", (e) => {
-        e.preventDefault();
-        if (draggedDiv && draggedDiv !== e.target) {
-            // Swap background images
-            const draggedBg = window.getComputedStyle(draggedDiv).backgroundImage;
-            const targetBg = window.getComputedStyle(e.target).backgroundImage;
+  // When dropped on another image
+  div.addEventListener("drop", (e) => {
+    e.preventDefault();
+    if (draggedElement && draggedElement !== e.target) {
+      // Swap background images
+      const draggedStyle = window.getComputedStyle(draggedElement);
+      const targetStyle = window.getComputedStyle(e.target);
 
-            draggedDiv.style.backgroundImage = targetBg;
-            e.target.style.backgroundImage = draggedBg;
+      const draggedBg = draggedStyle.backgroundImage;
+      const targetBg = targetStyle.backgroundImage;
 
-            // Optional: Swap inner text too
-            const tempText = draggedDiv.textContent;
-            draggedDiv.textContent = e.target.textContent;
-            e.target.textContent = tempText;
-        }
-    });
+      draggedElement.style.backgroundImage = targetBg;
+      e.target.style.backgroundImage = draggedBg;
 
-    // Drag end
-    div.addEventListener("dragend", (e) => {
-        e.target.classList.remove("selected");
-        draggedDiv = null;
-    });
+      // Optionally swap inner text too (Image 1, Image 2 etc.)
+      const tempText = draggedElement.innerText;
+      draggedElement.innerText = e.target.innerText;
+      e.target.innerText = tempText;
+    }
+  });
 });
